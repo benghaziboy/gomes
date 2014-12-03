@@ -2,24 +2,52 @@ package gomes
 
 import (
 	"fmt"
-	"log"
+	"github.com/crowdmob/goamz/sns"
+	"os"
 )
 
-func Ping() {
-	fmt.Println("PING")
+var (
+	APN = os.Getenv("SNS_APN_ARN")
+)
+
+type PushToken struct {
+	uid   string
+	arn   string
+	token string
 }
 
-func init() {
-	auth, err := authenticateAws()
+func (pt *PushToken) IsEnabled() (bool, error) {
+	resp, err := snsConn.GetEndpointAttributes(pt.arn)
 	if err != nil {
-		log.Println(err)
+		return false, err
 	}
+
+	fmt.Println(resp)
+
+	return true, nil
+}
+
+// func New(uid string) (*PushToken, error) {
+
+// }
+
+func NewArn(token string) (*sns.CreatePlatformEndpointResponse, error) {
+	opts := sns.PlatformEndpointOptions{
+		PlatformApplicationArn: APN,
+		Token: token,
+	}
+
+	resp, err := snsConn.CreatePlatformEndpoint(&opts)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(resp)
+
+	return resp, nil
+}
+
+func PrintAuth() {
 	fmt.Println(auth)
-
-	snsConn, err := connectSNS(&auth)
-	if err != nil {
-		log.Println(err)
-	}
 	fmt.Println(snsConn)
-
 }

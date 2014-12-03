@@ -6,15 +6,43 @@ import (
 	"log"
 )
 
-func authenticateAws() (auth aws.Auth, err error) {
-	auth, err = aws.EnvAuth()
-	return
+var (
+	auth    *aws.Auth
+	snsConn *sns.SNS
+)
+
+func authenticateAws() error {
+	a, err := aws.EnvAuth()
+	if err != nil {
+		return err
+	}
+
+	auth = &a
+
+	return nil
 }
 
-func connectSNS(auth *aws.Auth) (snsConn *sns.SNS, err error) {
-	snsConn, err = sns.New(*auth, aws.APNortheast)
+func connectSNS(auth *aws.Auth) error {
+	s, err := sns.New(*auth, aws.APNortheast)
+	if err != nil {
+		return err
+	}
+
+	snsConn = s
+
+	return nil
+}
+
+func init() {
+	err := authenticateAws()
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	return
+
+	err = connectSNS(auth)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
