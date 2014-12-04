@@ -23,7 +23,7 @@ func authenticateAws() error {
 }
 
 func connectSNS(auth *aws.Auth) error {
-	s, err := sns.New(*auth, aws.APNortheast)
+	s, err := sns.New(*auth, aws.USEast)
 	if err != nil {
 		return err
 	}
