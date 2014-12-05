@@ -29,22 +29,36 @@ type ApnsSandbox struct {
 	ApnsSandbox string `json:"APNS_SANDBOX"`
 }
 
-type ApnType struct {
-	Aps `json:"aps,omitempty"`
+type ApsType struct {
+	ApsData `json:"aps,omitempty"`
 }
 
-type Aps struct {
+type ApsData struct {
 	Alert string  `json:"alert,omitempty"`
 	Badge *string `json:"badge,omitempty"`
 	Sound *string `json:"sound,omitempty"`
 }
 
-func (pt *PushToken) SendMessage(alert string, badge, sound *string) (*sns.PublishResponse, error) {
+type Gcm struct {
+	Gcm string `json:"GCM"`
+}
+
+type GcmType struct {
+	GcmData `json:"data"`
+}
+
+type GcmData struct {
+	Message string  `json:"message,omitempty"`
+	Url     *string `json:"url,omitempty"`
+}
+
+func (pt *PushToken) SendMessage(alert string, badge, sound, url *string) (*sns.PublishResponse, error) {
 	var message []byte
+	var payload interface{}
 
 	if pt.ArnType == "APNS" || pt.ArnType == "APNS_SANDBOX" {
-		body, err := json.Marshal(ApnType{
-			Aps{
+		body, err := json.Marshal(ApsType{
+			ApsData{
 				Alert: alert,
 				Badge: badge,
 				Sound: sound,
@@ -54,13 +68,31 @@ func (pt *PushToken) SendMessage(alert string, badge, sound *string) (*sns.Publi
 			return nil, err
 		}
 
-		if pt.ArnType == "APNS" {
-			message, err = json.Marshal(Apns{string(body)})
+		switch pt.ArnType {
+		case "APNS":
+			payload = Apns{string(body)}
+		case "APNS_SANDBOX":
+			payload = ApnsSandbox{string(body)}
+		}
+	}
+
+	if pt.ArnType == "GCM" {
+		body, err := json.Marshal(GcmType{
+			GcmData{
+				Message: alert,
+				Url:     url,
+			},
+		})
+		if err != nil {
+			return nil, err
 		}
 
-		if pt.ArnType == "APNS_SANDBOX" {
-			message, err = json.Marshal(ApnsSandbox{string(body)})
-		}
+		payload = Gcm{string(body)}
+	}
+
+	message, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
 	}
 
 	options := sns.PublishOptions{
