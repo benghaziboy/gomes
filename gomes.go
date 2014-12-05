@@ -1,7 +1,6 @@
 package gomes
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,18 +21,30 @@ type PushToken struct {
 	Token   string
 }
 
-type ApsBody struct {
+type Apns struct {
+	Apns string `json:"APNS"`
+}
+
+type ApnsSandbox struct {
+	ApnsSandbox string `json:"APNS_SANDBOX"`
+}
+
+type ApnType struct {
+	Aps `json:"aps,omitempty"`
+}
+
+type Aps struct {
 	Alert string  `json:"alert,omitempty"`
 	Badge *string `json:"badge,omitempty"`
 	Sound *string `json:"sound,omitempty"`
 }
 
 func (pt *PushToken) SendMessage(alert string, badge, sound *string) (*sns.PublishResponse, error) {
-	body := &bytes.Buffer{}
+	var message []byte
 
 	if pt.ArnType == "APNS" || pt.ArnType == "APNS_SANDBOX" {
-		err := json.NewEncoder(body).Encode(map[string]ApsBody{
-			"aps": ApsBody{
+		body, err := json.Marshal(ApnType{
+			Aps{
 				Alert: alert,
 				Badge: badge,
 				Sound: sound,
@@ -42,17 +53,18 @@ func (pt *PushToken) SendMessage(alert string, badge, sound *string) (*sns.Publi
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	payload, err := json.Marshal(map[string]string{
-		pt.ArnType: string(body.String()),
-	})
-	if err != nil {
-		return nil, err
+		if pt.ArnType == "APNS" {
+			message, err = json.Marshal(Apns{string(body)})
+		}
+
+		if pt.ArnType == "APNS_SANDBOX" {
+			message, err = json.Marshal(ApnsSandbox{string(body)})
+		}
 	}
 
 	options := sns.PublishOptions{
-		Message:          string(payload),
+		Message:          string(message),
 		MessageStructure: "json",
 		TargetArn:        pt.Arn,
 	}
