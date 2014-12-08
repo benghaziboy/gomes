@@ -7,6 +7,7 @@ import (
 	"github.com/crowdmob/goamz/sns"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -128,9 +129,10 @@ func New(uid, token string) (*PushToken, error) {
 	}
 
 	pushtoken := PushToken{
-		Uid:   uid,
-		Arn:   *arn,
-		Token: token,
+		Uid:     uid,
+		Arn:     *arn,
+		ArnType: strings.Split(SnsArn, "/")[1],
+		Token:   token,
 	}
 	fmt.Println(pushtoken)
 
