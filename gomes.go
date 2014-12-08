@@ -11,7 +11,7 @@ import (
 
 var (
 	MissingEnabledAttribute = errors.New("Missing 'Enabled' attribute from the aws response")
-	Apn                     = os.Getenv("SNS_APN_ARN")
+	SnsArn                  = os.Getenv("SNS_APP_ARN")
 )
 
 type PushToken struct {
@@ -139,7 +139,7 @@ func New(uid, token string) (*PushToken, error) {
 
 func NewArn(token string) (*string, error) {
 	opts := sns.PlatformEndpointOptions{
-		PlatformApplicationArn: Apn,
+		PlatformApplicationArn: SnsArn,
 		Token: token,
 	}
 
