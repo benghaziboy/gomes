@@ -1,11 +1,10 @@
 package gomes
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq"
+	"gomes/docker"
 	"log"
 	"os"
 )
@@ -40,6 +39,8 @@ func CreatePushTokenTable() error {
 	if err != nil {
 		return err
 	}
+
+	return nil
 }
 
 func InsertPushToken(pt *PushToken) error {
@@ -47,12 +48,14 @@ func InsertPushToken(pt *PushToken) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
 }
 
 func SelectPushToken(uid string) (*PushToken, error) {
 	var pushtoken PushToken
 
-	row, err := Conn.Query(query, uid)
+	row, err := Conn.Query(selectPushToken, uid)
 	if err != nil {
 		return nil, err
 	}
