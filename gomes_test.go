@@ -1,8 +1,10 @@
 package gomes
 
 import (
+	"fmt"
 	"github.com/crowdmob/goamz/aws"
 	. "gopkg.in/check.v1"
+	"os"
 )
 
 var _ = Suite(&AwsSuite{})
@@ -30,5 +32,30 @@ func (s *AwsSuite) TestNewArn(c *C) {
 
 	arn, err := NewArn(deviceToken)
 	c.Assert(err, IsNil)
-	c.Assert(*arn, Equals, "arn:aws:sns:us-west-2:123456789012:endpoint/GCM/gcmpushapp/5e3e9847-3183-3f18-a7e8-671c3a57d4b3")
+	c.Assert(*arn, Equals, respGcmArn)
+}
+
+func (s *AwsSuite) TestNewPushToken(c *C) {
+	err := initAws()
+	c.Assert(err, IsNil)
+
+	pt, err := New("dogman", deviceToken)
+	c.Assert(err, IsNil)
+	c.Assert(pt.Uid, Equals, "dogman")
+	c.Assert(pt.Arn, Equals, respGcmArn)
+	c.Assert(pt.ArnType, Equals, "APNS_SANDBOX")
+	c.Assert(pt.Token, Equals, deviceToken)
+}
+
+func (s *AwsSuite) TestPushTokenEnabled(c *C) {
+	err := initAws()
+	c.Assert(err, IsNil)
+
+	pt, err := New("dogman", deviceToken)
+	c.Assert(err, IsNil)
+
+	enabled, err := pt.IsEnabled()
+	c.Assert(err, IsNil)
+	c.Assert(enabled, Equals, true)
+
 }

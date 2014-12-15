@@ -14,7 +14,10 @@ type AwsSuite struct{}
 var (
 	awsAccessKey = "THISISANACCESSKEY"
 	awsSecretKey = "THISISASECRETKEY"
-	deviceToken  = "FE66489F304DC75B8D6E8200DFF8A456E8DAEACEC428B427E9518741C92C6660"
+	awsAppArn    = "arn:aws:sns:us-east-1:374853505812:app/APNS_SANDBOX/gomes"
+
+	deviceToken = "FE66489F304DC75B8D6E8200DFF8A456E8DAEACEC428B427E9518741C92C6660"
+	respGcmArn  = "arn:aws:sns:us-west-2:123456789012:endpoint/GCM/gcmpushapp/5e3e9847-3183-3f18-a7e8-671c3a57d4b3"
 )
 
 func (s *AwsSuite) SetUpTest(c *C) {
@@ -27,4 +30,7 @@ func (s *AwsSuite) SetUpTest(c *C) {
 
 	os.Setenv("AWS_ACCESS_KEY", awsAccessKey)
 	os.Setenv("AWS_SECRET_KEY", awsSecretKey)
+	os.Setenv("SNS_APP_ARN", awsAppArn)
+
+	SnsArn = os.Getenv("SNS_APP_ARN")
 }

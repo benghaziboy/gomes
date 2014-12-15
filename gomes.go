@@ -134,7 +134,6 @@ func New(uid, token string) (*PushToken, error) {
 		ArnType: strings.Split(SnsArn, "/")[1],
 		Token:   token,
 	}
-	fmt.Println(pushtoken)
 
 	return &pushtoken, nil
 }
