@@ -1,9 +1,9 @@
 package gomes
 
 import (
+	"fmt"
 	"github.com/crowdmob/goamz/aws"
 	"github.com/crowdmob/goamz/sns"
-	"log"
 )
 
 var (
@@ -33,16 +33,16 @@ func connectSNS(auth *aws.Auth) error {
 	return nil
 }
 
-func init() {
+func initAws() error {
 	err := authenticateAws()
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
 	err = connectSNS(auth)
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
+
+	return nil
 }
