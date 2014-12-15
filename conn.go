@@ -1,7 +1,6 @@
 package gomes
 
 import (
-	"fmt"
 	"github.com/crowdmob/goamz/aws"
 	"github.com/crowdmob/goamz/sns"
 )
