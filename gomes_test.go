@@ -1,10 +1,8 @@
 package gomes
 
 import (
-	"fmt"
 	"github.com/crowdmob/goamz/aws"
 	. "gopkg.in/check.v1"
-	"os"
 )
 
 var _ = Suite(&AwsSuite{})

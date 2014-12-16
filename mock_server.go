@@ -13,7 +13,7 @@ const (
 	mockCreatePlatformEndpoint = `
     <CreatePlatformEndpointResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
       <CreatePlatformEndpointResult>
-        <EndpointArn>arn:aws:sns:us-west-2:123456789012:endpoint/GCM/gcmpushapp/5e3e9847-3183-3f18-a7e8-671c3a57d4b3</EndpointArn>
+        <EndpointArn>arn:aws:sns:us-east-2:123456789012:endpoint/GCM/gcmpushapp/5e3e9847-3183-3f18-a7e8-671c3a57d4b3</EndpointArn>
       </CreatePlatformEndpointResult>
       <ResponseMetadata>
         <RequestId>6613341d-3e15-53f7-bf3c-7e56994ba278</RequestId>
@@ -55,22 +55,26 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func createMockServer() *httptest.Server {
-
 	router := mux.NewRouter()
-	router.Handle("/", Handler(handleMockCreatePlatformEndpoint))
-
+	router.Handle("/", Handler(handleMockRequests))
 	return httptest.NewServer(router)
 }
 
-func handleMockCreatePlatformEndpoint(w http.ResponseWriter, r *http.Request) error {
-	m, err := parseAwsRequestBody(r)
-	if err != nil {
-		return err
-	}
-
-	if m["Action"] == "CreatePlatformEndpoint" {
+func handleMockRequests(w http.ResponseWriter, r *http.Request) error {
+	if r.Method == "GET" {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, mockCreatePlatformEndpoint)
+		fmt.Fprintf(w, mockGetEndpointAttributes)
+
+	} else {
+		m, err := parseAwsRequestBody(r)
+		if err != nil {
+			return err
+		}
+
+		if m["Action"] == "CreatePlatformEndpoint" {
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, mockCreatePlatformEndpoint)
+		}
 	}
 
 	return nil
@@ -78,8 +82,6 @@ func handleMockCreatePlatformEndpoint(w http.ResponseWriter, r *http.Request) er
 
 func parseAwsRequestBody(r *http.Request) (map[string]string, error) {
 	m := make(map[string]string)
-
-	fmt.Println("\n\n\nRequest: ", r.URL)
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
