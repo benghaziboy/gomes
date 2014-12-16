@@ -102,12 +102,12 @@ func (pt *PushToken) SendMessage(alert string, badge, sound, url *string) (*sns.
 		TargetArn:        pt.Arn,
 	}
 
-	pr, err := snsConn.Publish(&options)
+	pr, err := awsSns.Publish(&options)
 	return pr, err
 }
 
 func (pt *PushToken) IsEnabled() (bool, error) {
-	resp, err := snsConn.GetEndpointAttributes(pt.Arn)
+	resp, err := awsSns.GetEndpointAttributes(pt.Arn)
 	if err != nil {
 		return false, err
 	}
@@ -144,7 +144,7 @@ func NewArn(token string) (*string, error) {
 		Token: token,
 	}
 
-	resp, err := snsConn.CreatePlatformEndpoint(&opts)
+	resp, err := awsSns.CreatePlatformEndpoint(&opts)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

@@ -10,18 +10,18 @@ var _ = Suite(&AwsSuite{})
 func (s *AwsSuite) TestAwsAuthentication(c *C) {
 	err := authenticateAws()
 	c.Assert(err, IsNil)
-	c.Assert(auth.AccessKey, Equals, awsAccessKey)
-	c.Assert(auth.SecretKey, Equals, awsSecretKey)
+	c.Assert(awsAuth.AccessKey, Equals, awsAccessKey)
+	c.Assert(awsAuth.SecretKey, Equals, awsSecretKey)
 }
 
 func (s *AwsSuite) TestSnsEndpoint(c *C) {
 	err := authenticateAws()
 	c.Assert(err, IsNil)
 
-	err = connectSNS(auth)
+	err = connectSNS(awsAuth)
 	c.Assert(err, IsNil)
-	c.Assert(snsConn.Auth, Equals, *auth)
-	c.Assert(snsConn.Region, Equals, aws.USEast)
+	c.Assert(awsSns.Auth, Equals, *awsAuth)
+	c.Assert(awsSns.Region, Equals, aws.USEast)
 }
 
 func (s *AwsSuite) TestNewArn(c *C) {

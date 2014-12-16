@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	auth    *aws.Auth
-	snsConn *sns.SNS
+	awsAuth *aws.Auth
+	awsSns  *sns.SNS
 )
 
 func authenticateAws() error {
@@ -16,7 +16,7 @@ func authenticateAws() error {
 		return err
 	}
 
-	auth = &a
+	awsAuth = &a
 
 	return nil
 }
@@ -27,7 +27,7 @@ func connectSNS(auth *aws.Auth) error {
 		return err
 	}
 
-	snsConn = s
+	awsSns = s
 
 	return nil
 }
@@ -38,7 +38,7 @@ func initAws() error {
 		return err
 	}
 
-	err = connectSNS(auth)
+	err = connectSNS(awsAuth)
 	if err != nil {
 		return err
 	}
