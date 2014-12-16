@@ -55,5 +55,17 @@ func (s *AwsSuite) TestPushTokenEnabled(c *C) {
 	enabled, err := pt.IsEnabled()
 	c.Assert(err, IsNil)
 	c.Assert(enabled, Equals, true)
+}
 
+func (s *AwsSuite) TestPushTokenSendMessage(c *C) {
+	err := initAws()
+	c.Assert(err, IsNil)
+
+	pt, err := New("dogman", deviceToken)
+	c.Assert(err, IsNil)
+
+	alert := "Werner Herzog's Fun House"
+	resp, err := pt.SendMessage(alert, nil, nil, nil)
+	c.Assert(err, IsNil)
+	c.Assert(resp.ResponseMetadata.RequestId, Equals, "d74b8436-ae13-5ab4-a9ff-ce54dfea72a0")
 }

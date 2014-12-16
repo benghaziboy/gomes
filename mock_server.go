@@ -43,6 +43,17 @@ const (
       </ResponseMetadata>
     </GetEndpointAttributesResponse>
     `
+
+	mockSendMessageResponse = `
+    <PublishResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
+      <PublishResult>
+        <MessageId>567910cd-659e-55d4-8ccb-5aaf14679dc0</MessageId>
+      </PublishResult>
+      <ResponseMetadata>
+        <RequestId>d74b8436-ae13-5ab4-a9ff-ce54dfea72a0</RequestId>
+      </ResponseMetadata>
+    </PublishResponse>
+    `
 )
 
 type Handler func(http.ResponseWriter, *http.Request) error
@@ -71,9 +82,13 @@ func handleMockRequests(w http.ResponseWriter, r *http.Request) error {
 			return err
 		}
 
-		if m["Action"] == "CreatePlatformEndpoint" {
+		switch m["Action"] {
+		case "CreatePlatformEndpoint":
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, mockCreatePlatformEndpoint)
+		case "Publish":
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, mockSendMessageResponse)
 		}
 	}
 
